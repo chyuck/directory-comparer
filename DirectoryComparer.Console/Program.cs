@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace DirectoryComparer.Console
+﻿namespace DirectoryComparer.Console
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            System.Console.WriteLine("Hello World!");
+            System.Console.WriteLine(string.Join(",", args));
         }
     }
 }
