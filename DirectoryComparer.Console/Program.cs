@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Agero.Core.Checker;
 using CsvHelper;
+using DirectoryComparer.Console.Models;
 using Newtonsoft.Json;
 
 namespace DirectoryComparer.Console
@@ -30,17 +33,36 @@ namespace DirectoryComparer.Console
             }
 
             {
+                var flatResults = FlattenResults(results);
+                
                 var outputFile = Path.Combine(outputDir, $"{fileName}.csv");
                 
                 using (var writer = new StreamWriter(outputFile))
                 using (var csv = new CsvWriter(writer))
                 {    
-                    csv.WriteRecords(results);
+                    csv.WriteRecords(flatResults);
                 }
                 
                 System.Console.WriteLine($"Compare result has been saved to '{outputFile}' file."); 
             }
+        }
 
+        private static IEnumerable<BaseCompareResult> FlattenResults(IReadOnlyCollection<BaseCompareResult> results)
+        {
+            Check.ArgumentIsNull(results, nameof(results));
+
+            foreach (var result in results)
+            {
+                yield return result;
+                
+                if (!(result is DirectoryCompareResult dirResult)) 
+                    continue;
+
+                var flatResults = FlattenResults(dirResult.Items);
+
+                foreach (var flattenResult in flatResults)
+                    yield return flattenResult;
+            }
         }
     }
 }
